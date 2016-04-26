@@ -2,6 +2,8 @@
 import requests
 import re
 import datetime
+import os
+
 from jinja2 import Template
 
 hosts = [
@@ -9,6 +11,8 @@ hosts = [
     ['http://help.profitopia.de/', 'Profitopia-Hilfe'],
     ['http://blog.profitopia.de/', 'Profitopia-Blog'],
 ]
+# mail command should contain recipient and have a single {} for subject formatting
+mail_command = '# {}'
 
 
 def check_host(host):
@@ -21,6 +25,9 @@ def check_host(host):
             host[1] = False
     except Exception:
         host[1] = False
+    if host[1] is False:
+        os.system(mail_command.format('CRITICAL: {} is critical'.format(host[0])))
+
     return host
 
 
