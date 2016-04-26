@@ -18,7 +18,7 @@ mail_command = '# {}'
 def check_host(host):
     """Check a single host."""
     try:
-        request = requests.get(host[0])
+        request = requests.get(host[0], timeout=3)
         if re.search(host[1], request.text):
             host[1] = True
         else:
