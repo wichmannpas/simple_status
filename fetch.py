@@ -48,7 +48,7 @@ def generate_status_page():
     # load template
     template = Template(open('template.html').read())
     print(template.render({
-        'time': '{}.{}.{} {}:{}'.format(now.day, now.month, now.year, now.hour, now.minute),
+        'time': '{}.{}.{} {:02d}:{:02d}'.format(now.day, now.month, now.year, now.hour, now.minute),
         'status': status,
     }))
 
