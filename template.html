@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Statusmonitor</title>
+
+    <style type="text/css">
+      body {
+        font-family: Helvetica;
+        font-size: 25px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Status: Foobar</h1>
+    <p>Stand: {{ time }}</p>
+
+    <table>
+      {% for host in status %}
+        <tr>
+          <th style="padding: 7px; border-radius: 9px; background: {% if host.1 %}#00FF00{% else %}red{% endif %};">{% if host.1 %}OK{% else %}CRITICAL{% endif %}</th>
+          <td style="padding-left: 20px;">{{ host.0 }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+  </body>
+</html>
