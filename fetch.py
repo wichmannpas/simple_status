@@ -46,7 +46,9 @@ def check_host(host):
 
 def get_statistics_for_host(host):
     """Get all collected statistics for specific host."""
-    stats = json.loads(open(stats_file, 'r').read())
+    stats = {}
+    if os.path.isfile(stats_file):
+        stats = json.loads(open(stats_file, 'r').read())
     if host not in stats:
         return {}
     stats = stats[host]
@@ -77,10 +79,10 @@ def get_statistics_for_host(host):
 def renew_status():
     """Fetch the status for all hosts."""
     status = []
-    for host, host_status in hosts:
+    for host, host_pattern in hosts:
         status.append({
             'host': host,
-            'status': host_status,
+            'status': check_host([host, host_pattern])[1],
             'stats': get_statistics_for_host(host),
         })
 
