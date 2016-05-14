@@ -83,7 +83,6 @@ def renew_status():
         status.append({
             'host': host,
             'status': check_host([host, host_pattern])[1],
-            'stats': get_statistics_for_host(host),
         })
 
     return status
@@ -119,6 +118,15 @@ def delete_old_statistics(stats):
     return stats
 
 
+def add_statistics_to_status(status):
+    """Add statistics data to status."""
+    return [{
+        'host': h['host'],
+        'status': h['status'],
+        'stats': get_statistics_for_host(h['host']),
+    } for h in status]
+
+
 def generate_status_page():
     """Generate a html page containing the status of the pages."""
     status = renew_status()
@@ -126,6 +134,9 @@ def generate_status_page():
 
     # update statistics
     update_statistics(status)
+
+    # add stats to status
+    status = add_statistics_to_status(status)
 
     # load template
     template = Template(open('template.html').read())
