@@ -28,9 +28,9 @@
     </table>
 
     <h3>Durchschnittliche Erreichbarkeit</h3>
-    <table>
+    <table style="width: 100%;">
       <tr>
-        <th>Dienst</th>
+        <th style="text-align: left;">Dienst</th>
         <th>12h</th>
         <th>1d</th>
         <th>1w</th>
@@ -40,13 +40,13 @@
       </tr>
       {% for host in status %}
         <tr>
-          <th>{{ host.host }}</th>
-          <td>{{ '{:.2f}'.format(host.stats.hd) }}%</td>
-          <td>{{ '{:.2f}'.format(host.stats.d) }}%</td>
-          <td>{{ '{:.2f}'.format(host.stats.w) }}%</td>
-          <td>{{ '{:.2f}'.format(host.stats.m) }}%</td>
-          <td>{{ '{:.2f}'.format(host.stats.mm) }}%</td>
-          <td>{{ '{:.2f}'.format(host.stats.y) }}%</td>
+          <th style="text-align: left;">{{ host.host }}</th>
+          <td style="text-align: center;">{{ '{:.2f}'.format(host.stats.hd) }}%</td>
+          <td style="text-align: center;">{{ '{:.2f}'.format(host.stats.d) }}%</td>
+          <td style="text-align: center;">{{ '{:.2f}'.format(host.stats.w) }}%</td>
+          <td style="text-align: center;">{{ '{:.2f}'.format(host.stats.m) }}%</td>
+          <td style="text-align: center;">{{ '{:.2f}'.format(host.stats.mm) }}%</td>
+          <td style="text-align: center;">{{ '{:.2f}'.format(host.stats.y) }}%</td>
         </tr>
       {% endfor %}
     </table>
