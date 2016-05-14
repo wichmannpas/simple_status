@@ -13,6 +13,7 @@ import datetime
 import os
 import json
 
+from copy import deepcopy
 from jinja2 import Template
 
 check_interval = 5  # minutes
@@ -75,7 +76,11 @@ def update_statistics(status):
 
 def delete_old_statistics(stats):
     """Delete too old statistics."""
-    # TODO
+    min = datetime.datetime.now() - datetime.timedelta(days=keep_history)
+    for host, entries in deepcopy(stats).items():
+        for entry in entries.keys():
+            if datetime.datetime.strptime(entry, '%Y%m%d%H%M') < min:
+                del stats[host][entry]
     return stats
 
 
