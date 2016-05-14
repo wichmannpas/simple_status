@@ -1,6 +1,7 @@
 <!doctype html>
 <html>
   <head>
+    <meta charset="utf-8" />
     <title>Statusmonitor</title>
 
     <meta http-equiv="refresh" content="5" />
@@ -16,11 +17,36 @@
     <h1>Status: Foobar</h1>
     <p>Stand: {{ time }}</p>
 
+    <h3>Aktuelle Erreichbarkeit</h3>
     <table>
       {% for host in status %}
         <tr>
-          <th style="padding: 7px; border-radius: 9px; background: {% if host.1 %}#00FF00{% else %}red{% endif %};">{% if host.1 %}OK{% else %}CRITICAL{% endif %}</th>
-          <td style="padding-left: 20px;">{{ host.0 }}</td>
+          <th style="padding: 7px; border-radius: 9px; background: {% if host.status %}#00FF00{% else %}red{% endif %};">{% if host.status %}OK{% else %}CRITICAL{% endif %}</th>
+          <td style="padding-left: 20px;">{{ host.host }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+
+    <h3>Durchschnittliche Erreichbarkeit</h3>
+    <table>
+      <tr>
+        <th>Dienst</th>
+        <th>12h</th>
+        <th>1d</th>
+        <th>1w</th>
+        <th>30d</th>
+        <th>90d</th>
+        <th>365d</th>
+      </tr>
+      {% for host in status %}
+        <tr>
+          <th>{{ host.host }}</th>
+          <td>{{ '{:.2f}'.format(host.stats.hd) }}%</td>
+          <td>{{ '{:.2f}'.format(host.stats.d) }}%</td>
+          <td>{{ '{:.2f}'.format(host.stats.w) }}%</td>
+          <td>{{ '{:.2f}'.format(host.stats.m) }}%</td>
+          <td>{{ '{:.2f}'.format(host.stats.mm) }}%</td>
+          <td>{{ '{:.2f}'.format(host.stats.y) }}%</td>
         </tr>
       {% endfor %}
     </table>
