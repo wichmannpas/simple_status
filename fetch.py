@@ -13,7 +13,6 @@ import datetime
 import os
 import json
 
-from copy import deepcopy
 from jinja2 import Template
 
 keep_history = 365  # days
@@ -53,6 +52,12 @@ def get_statistics_for_host(host):
         return {}
     stats = stats[host]
 
+    now = datetime.datetime.now()
+    now_key = now.strftime('%Y%m%d%H%M')
+
+    sorted_keys = sorted(stats.keys())
+    oldest_key = sorted_keys[0]
+
     result = {}
     for key, min in (
         ('hd', datetime.timedelta(hours=12)),
@@ -62,18 +67,65 @@ def get_statistics_for_host(host):
         ('mm', datetime.timedelta(days=90)),
         ('y', datetime.timedelta(days=365)),
     ):
-        count = 0
+        start_key = (datetime.datetime.now() - min).strftime('%Y%m%d%H%M')
+        actual_start_key = start_key
+
+        # find earliest relevant entry
+        if start_key in sorted_keys:
+            # The start key had a change. It can be used as current state.
+            current_state = stats[start_key]
+            left_key = start_key
+        elif oldest_key < start_key:
+            # There are older entries than start_key. Search on the left.
+            for c_key in sorted_keys:
+                if c_key > start_key:
+                    # start_key has already been reached. Stop searching.
+                    break
+                current_state = stats[c_key]
+                left_key = c_key
+        else:
+            # start_key is older than stats. Can use oldest entry directly.
+            current_state = stats[oldest_key]
+            actual_start_key = oldest_key
+            left_key = actual_start_key
+
         up_count = 0
-        # filter stats of host for all relevant entries
-        for time, up in stats.items():
-            if datetime.datetime.strptime(
-                    time, '%Y%m%d%H%M') < datetime.datetime.now() - min:
-                continue
-            count += 1
-            if up:
-                up_count += 1
+
+        # calculate total count from actual start key and now
+        count = calculate_minutes_between_keys(actual_start_key, now)
+
+        keys_including_now = sorted_keys[
+            sorted_keys.index(left_key) + 1:]
+        if now_key not in sorted_keys:
+            keys_including_now += [now_key]
+
+        last_key = actual_start_key
+
+        # loop through relevant list entries from first after left_key
+        # til end
+        for current_key in keys_including_now:
+            if current_state:
+                # was up. Add number of minutes to up_count.
+                up_count += calculate_minutes_between_keys(
+                    last_key, current_key)
+
+            last_key = current_key
+            if current_key in stats:
+                # conditional as now key is added if not already in.
+                current_state = stats[current_key]
+
         result[key] = 100 if count == 0 else 100 * up_count / count
     return result
+
+
+def calculate_minutes_between_keys(start, end):
+    """Caculate the number of minutes gone between two keys/datetimes."""
+    if isinstance(start, str):
+        start = datetime.datetime.strptime(start, '%Y%m%d%H%M')
+    if isinstance(end, str):
+        end = datetime.datetime.strptime(end, '%Y%m%d%H%M')
+
+    return ((end - start).total_seconds() // 60)
 
 
 def renew_status():
@@ -94,28 +146,24 @@ def update_statistics(status):
         current_stats = {}
     else:
         current_stats = json.loads(open(stats_file, 'r').read())
-        current_stats = delete_old_statistics(current_stats)
+        # current_stats = delete_old_statistics(current_stats)
 
-    current_key = datetime.datetime.now().strftime('%Y%m%d%H%M')
+    current_key = int(datetime.datetime.now().strftime('%Y%m%d%H%M'))
     for host, up in ((h['host'], h['status']) for h in status):
         if host not in current_stats:
             current_stats[host] = {}
 
-        # add current measurement
-        current_stats[host][current_key] = up
+        # get newest entry of host
+        newest_state = None, None
+        for key, entry in current_stats[host].items():
+            if newest_state[0] is None or int(key) > int(newest_state[0]):
+                newest_state = key, entry
+        if newest_state[1] != up:
+            # state has changed. Write it.
+            current_stats[host][current_key] = up
 
     # write stats
     open(stats_file, 'w').write(json.dumps(current_stats))
-
-
-def delete_old_statistics(stats):
-    """Delete too old statistics."""
-    min = datetime.datetime.now() - datetime.timedelta(days=keep_history)
-    for host, entries in deepcopy(stats).items():
-        for entry in entries.keys():
-            if datetime.datetime.strptime(entry, '%Y%m%d%H%M') < min:
-                del stats[host][entry]
-    return stats
 
 
 def add_statistics_to_status(status):
