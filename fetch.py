@@ -25,6 +25,8 @@ hosts = [
 # mail command should contain recipient and have a single {} for subject format
 mail_command = '# {}'
 
+overall_oldest_key = None
+
 
 def check_host(host):
     """Check a single host."""
@@ -45,6 +47,8 @@ def check_host(host):
 
 def get_statistics_for_host(host):
     """Get all collected statistics for specific host."""
+    global overall_oldest_key
+
     stats = {}
     if os.path.isfile(stats_file):
         stats = json.loads(open(stats_file, 'r').read())
@@ -57,6 +61,8 @@ def get_statistics_for_host(host):
 
     sorted_keys = sorted(stats.keys())
     oldest_key = sorted_keys[0]
+    if overall_oldest_key is None or oldest_key < overall_oldest_key:
+        overall_oldest_key = oldest_key
 
     result = {}
     for key, min in (
@@ -186,12 +192,19 @@ def generate_status_page():
     # add stats to status
     status = add_statistics_to_status(status)
 
+    # calculate datetime from oldest key
+    stats_first = datetime.datetime.strptime(
+        overall_oldest_key, '%Y%m%d%H%M')
+
     # load template
     template = Template(open('template.html').read())
     print(template.render({
         'time': '{}.{}.{} {:02d}:{:02d}'.format(
             now.day, now.month, now.year, now.hour, now.minute),
         'status': status,
+        'stats_first': '{}.{}.{} {:02d}:{:02d}'.format(
+            stats_first.day, stats_first.month, stats_first.year, 
+            stats_first.hour, stats_first.minute),
     }))
 
 
