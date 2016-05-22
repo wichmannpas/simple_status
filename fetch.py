@@ -112,13 +112,18 @@ def get_statistics_for_host(host):
         for current_key in keys_including_now:
             if current_state:
                 # was up. Add number of minutes to up_count.
+                # Subtract 1 in order to exclude current key
                 up_count += calculate_minutes_between_keys(
-                    last_key, current_key)
+                    last_key, current_key) - 1
 
             last_key = current_key
             if current_key in stats:
                 # conditional as now key is added if not already in.
                 current_state = stats[current_key]
+
+        if current_state:
+            # was up in last state. Add it now.
+            up_count += 1
 
         result[key] = 100 if count == 0 else 100 * up_count / count
     return result
@@ -203,7 +208,7 @@ def generate_status_page():
             now.day, now.month, now.year, now.hour, now.minute),
         'status': status,
         'stats_first': '{}.{}.{} {:02d}:{:02d}'.format(
-            stats_first.day, stats_first.month, stats_first.year, 
+            stats_first.day, stats_first.month, stats_first.year,
             stats_first.hour, stats_first.minute),
     }))
 
