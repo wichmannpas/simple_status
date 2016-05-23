@@ -15,7 +15,6 @@ import requests
 
 from jinja2 import Template
 
-KEEP_HISTORY = 365  # days
 STATS_FILE = 'stats'
 HOSTS = [
     ['http://example.org/', 'Example'],
