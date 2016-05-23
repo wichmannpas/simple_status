@@ -18,9 +18,7 @@ from jinja2 import Template
 KEEP_HISTORY = 365  # days
 STATS_FILE = 'stats'
 HOSTS = [
-    ['https://www.profitopia.de/', 'Profitopia'],
-    ['https://help.profitopia.de/', 'Profitopia-Hilfe'],
-    ['https://blog.profitopia.de/', 'Profitopia-Blog'],
+    ['http://example.org/', 'Example'],
 ]
 # mail command should contain recipient and have a single {} for subject format
 MAIL_COMMAND = '# {}'
