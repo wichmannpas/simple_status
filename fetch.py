@@ -24,6 +24,7 @@ HOSTS = [
 ]
 # mail command should contain recipient and have a single {} for subject format
 MAIL_COMMAND = '# {}'
+TEMPLATE_FILE = 'template-en.html'
 
 overall_oldest_key = None
 
@@ -199,7 +200,8 @@ def generate_status_page():
         overall_oldest_key, '%Y%m%d%H%M')
 
     # load template
-    template = Template(open('template.html').read())
+    with open(TEMPLATE_FILE) as template_file:
+        template = Template(template_file.read())
     print(template.render({
         'time': '{}.{}.{} {:02d}:{:02d}'.format(
             now.day, now.month, now.year, now.hour, now.minute),
