@@ -203,6 +203,7 @@ def generate_status_page():
         'stats_first': '{}.{}.{} {:02d}:{:02d}'.format(
             stats_first.day, stats_first.month, stats_first.year,
             stats_first.hour, stats_first.minute),
+        'title': CONFIG['title'],
     }))
 
 

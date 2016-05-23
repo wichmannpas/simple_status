@@ -28,7 +28,7 @@ cp /tmp/temporary_status /var/www/html/status.html
 rm /tmp/temporary_status
 ```
 
-Additionally, you may want to modify the template you are using to fit to your needs. Especially the title and the headline may be relevant to you. You can use only the alerting feature of this script, however the main focus lies on the statistics; so you would probably being better of with an even simpler solution in order to only get email alerts (i.e. the check_host method in the script would likely be all you need for that).
+You can use only the alerting feature of this script, however the main focus lies on the statistics; so you would probably being better of with an even simpler solution in order to only get email alerts (i.e. the check_host method in the script would likely be all you need for that).
 
 Example
 -------

@@ -4,5 +4,6 @@
   ],
   "stats_file": "stats",
   "mail_command": "# {}",
-  "template_file": "template-en.html"
+  "template_file": "template-en.html",
+  "title": "Status: Foobar"
 }
