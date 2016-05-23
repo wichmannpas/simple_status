@@ -21,6 +21,7 @@ HOSTS = [
     ['http://example.org/', 'Example'],
 ]
 # mail command should contain recipient and have a single {} for subject format
+# MAIL_COMMAND = 'echo "" | mail -s "{}" foobar@example'
 MAIL_COMMAND = '# {}'
 TEMPLATE_FILE = 'template-en.html'
 
