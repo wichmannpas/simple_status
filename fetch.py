@@ -7,23 +7,23 @@ Generates a html page from a template and
 sends an email to the admin. Additionally it can collect stats about uptimes.
 """
 
-import requests
-import re
 import datetime
-import os
 import json
+import os
+import re
+import requests
 
 from jinja2 import Template
 
-keep_history = 365  # days
-stats_file = 'stats'
-hosts = [
+KEEP_HISTORY = 365  # days
+STATS_FILE = 'stats'
+HOSTS = [
     ['https://www.profitopia.de/', 'Profitopia'],
     ['https://help.profitopia.de/', 'Profitopia-Hilfe'],
     ['https://blog.profitopia.de/', 'Profitopia-Blog'],
 ]
 # mail command should contain recipient and have a single {} for subject format
-mail_command = '# {}'
+MAIL_COMMAND = '# {}'
 
 overall_oldest_key = None
 
@@ -36,7 +36,7 @@ def check_host(host):
     except Exception:
         host[1] = False
     if host[1] is False:
-        os.system(mail_command.format('CRITICAL: {} is critical'.format(
+        os.system(MAIL_COMMAND.format('CRITICAL: {} is critical'.format(
             host[0])))
 
     return host
@@ -47,8 +47,8 @@ def get_statistics_for_host(host):
     global overall_oldest_key
 
     stats = {}
-    if os.path.isfile(stats_file):
-        stats = json.loads(open(stats_file, 'r').read())
+    if os.path.isfile(STATS_FILE):
+        stats = json.loads(open(STATS_FILE, 'r').read())
     if host not in stats:
         return {}
     stats = stats[host]
@@ -62,15 +62,15 @@ def get_statistics_for_host(host):
         overall_oldest_key = oldest_key
 
     result = {}
-    for key, min in (
-        ('hd', datetime.timedelta(hours=12)),
-        ('d', datetime.timedelta(days=1)),
-        ('w', datetime.timedelta(weeks=1)),
-        ('m', datetime.timedelta(days=30)),
-        ('mm', datetime.timedelta(days=90)),
-        ('y', datetime.timedelta(days=365)),
+    for key, delta in (
+            ('hd', datetime.timedelta(hours=12)),
+            ('d', datetime.timedelta(days=1)),
+            ('w', datetime.timedelta(weeks=1)),
+            ('m', datetime.timedelta(days=30)),
+            ('mm', datetime.timedelta(days=90)),
+            ('y', datetime.timedelta(days=365)),
     ):
-        start_key = (datetime.datetime.now() - min).strftime('%Y%m%d%H%M')
+        start_key = (datetime.datetime.now() - delta).strftime('%Y%m%d%H%M')
         actual_start_key = start_key
 
         # find earliest relevant entry
@@ -133,13 +133,13 @@ def calculate_minutes_between_keys(start, end):
     if isinstance(end, str):
         end = datetime.datetime.strptime(end, '%Y%m%d%H%M')
 
-    return ((end - start).total_seconds() // 60)
+    return (end - start).total_seconds() // 60
 
 
 def renew_status():
     """Fetch the status for all hosts."""
     status = []
-    for host, host_pattern in hosts:
+    for host, host_pattern in HOSTS:
         status.append({
             'host': host,
             'status': check_host([host, host_pattern])[1],
@@ -150,14 +150,14 @@ def renew_status():
 
 def update_statistics(status):
     """Add an entry to the stats file and delete too old entries."""
-    if not os.path.isfile(stats_file):
+    if not os.path.isfile(STATS_FILE):
         current_stats = {}
     else:
-        current_stats = json.loads(open(stats_file, 'r').read())
+        current_stats = json.loads(open(STATS_FILE, 'r').read())
         # current_stats = delete_old_statistics(current_stats)
 
     current_key = int(datetime.datetime.now().strftime('%Y%m%d%H%M'))
-    for host, up in ((h['host'], h['status']) for h in status):
+    for host, state in ((h['host'], h['status']) for h in status):
         if host not in current_stats:
             current_stats[host] = {}
 
@@ -166,12 +166,12 @@ def update_statistics(status):
         for key, entry in current_stats[host].items():
             if newest_state[0] is None or int(key) > int(newest_state[0]):
                 newest_state = key, entry
-        if newest_state[1] != up:
+        if newest_state[1] != state:
             # state has changed. Write it.
-            current_stats[host][current_key] = up
+            current_stats[host][current_key] = state
 
     # write stats
-    open(stats_file, 'w').write(json.dumps(current_stats))
+    open(STATS_FILE, 'w').write(json.dumps(current_stats))
 
 
 def add_statistics_to_status(status):
