@@ -32,10 +32,7 @@ def check_host(host):
     """Check a single host."""
     try:
         request = requests.get(host[0], timeout=3)
-        if re.search(host[1], request.text):
-            host[1] = True
-        else:
-            host[1] = False
+        host[1] = bool(re.search(host[1], request.text))
     except Exception:
         host[1] = False
     if host[1] is False:
