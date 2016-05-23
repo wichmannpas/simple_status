@@ -15,14 +15,10 @@ import requests
 
 from jinja2 import Template
 
-STATS_FILE = 'stats'
-HOSTS = [
-    ['http://example.org/', 'Example'],
-]
-# mail command should contain recipient and have a single {} for subject format
-# MAIL_COMMAND = 'echo "" | mail -s "{}" foobar@example'
-MAIL_COMMAND = '# {}'
-TEMPLATE_FILE = 'template-en.html'
+
+# Parse the configuration file.
+with open('config', 'r') as config_file:
+    CONFIG = json.loads(config_file.read())
 
 overall_oldest_key = None
 
@@ -35,8 +31,8 @@ def check_host(host):
     except Exception:
         host[1] = False
     if host[1] is False:
-        os.system(MAIL_COMMAND.format('CRITICAL: {} is critical'.format(
-            host[0])))
+        os.system(CONFIG['mail_command'].format(
+            'CRITICAL: {} is critical'.format(host[0])))
 
     return host
 
@@ -46,8 +42,8 @@ def get_statistics_for_host(host):
     global overall_oldest_key
 
     stats = {}
-    if os.path.isfile(STATS_FILE):
-        stats = json.loads(open(STATS_FILE, 'r').read())
+    if os.path.isfile(CONFIG['stats_file']):
+        stats = json.loads(open(CONFIG['stats_file'], 'r').read())
     if host not in stats:
         return {}
     stats = stats[host]
@@ -138,7 +134,7 @@ def calculate_minutes_between_keys(start, end):
 def renew_status():
     """Fetch the status for all hosts."""
     status = []
-    for host, host_pattern in HOSTS:
+    for host, host_pattern in CONFIG['hosts']:
         status.append({
             'host': host,
             'status': check_host([host, host_pattern])[1],
@@ -149,10 +145,10 @@ def renew_status():
 
 def update_statistics(status):
     """Add an entry to the stats file and delete too old entries."""
-    if not os.path.isfile(STATS_FILE):
+    if not os.path.isfile(CONFIG['stats_file']):
         current_stats = {}
     else:
-        current_stats = json.loads(open(STATS_FILE, 'r').read())
+        current_stats = json.loads(open(CONFIG['stats_file'], 'r').read())
         # current_stats = delete_old_statistics(current_stats)
 
     current_key = int(datetime.datetime.now().strftime('%Y%m%d%H%M'))
@@ -170,7 +166,7 @@ def update_statistics(status):
             current_stats[host][current_key] = state
 
     # write stats
-    open(STATS_FILE, 'w').write(json.dumps(current_stats))
+    open(CONFIG['stats_file'], 'w').write(json.dumps(current_stats))
 
 
 def add_statistics_to_status(status):
@@ -198,7 +194,7 @@ def generate_status_page():
         overall_oldest_key, '%Y%m%d%H%M')
 
     # load template
-    with open(TEMPLATE_FILE) as template_file:
+    with open(CONFIG['template_file']) as template_file:
         template = Template(template_file.read())
     print(template.render({
         'time': '{}.{}.{} {:02d}:{:02d}'.format(

@@ -1,0 +1,8 @@
+{
+  "hosts": [
+    ["http://example.org/", "Example"]
+  ],
+  "stats_file": "stats",
+  "mail_command": "# {}",
+  "template_file": "template-en.html"
+}

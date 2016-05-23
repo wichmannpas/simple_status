@@ -10,14 +10,16 @@ This is a very primitive way of checking the availability, but it should be enou
 Installation
 -----------
 
-First, you need to modify the constants defined at the top of the script. Most important are the *HOSTS*. That constant contains a list of hosts, where each host is a list containing the url to fetch and the pattern to search for on that page. An example can be found in the script.
+The script uses a file named *config* located in the same directory as the script itself to load the configuration value. You can use the file *config.example* from the repository as a template for your configuration.
 
-In order to get email alerts, you need to modify the *MAIL_COMMAND* constant. There is an example command commented in the script which you can use as a basis. If you do not want to get email alerts, leave the *MAIL_COMMAND* as it is.
-You can configure any command as *MAIL_COMMAND*; the only requirement is that the command can be executed successfully on the host where the script is running.
+Most important are the *hosts*. That configuration contains a list of hosts, where each host is a list containing the url to fetch and the pattern to search for on that page.
 
-After you have configured the constants, you should run the script manually once in order to ensure that everything works as intended. Then you can configure a cronjob which triggers the script. The script does not require any specific frequency for it to be executed (it does not even need to be consistent). Depending on your needs this can be every minute, every 5 minutes or even every hour; email alerts may however arrive later and the downtime displayed in the statistics may display too less uptime when you choose a very low frequency (as a very short downtime will be counted as if it lasted until the next execution).
+In order to get email alerts, you need to modify the *mail_command* configuration. If you do not want to get email alerts, leave the value as it is. Otherweise you need to specify a command which send you an email. An example would be ```echo "" | mail -s "{}" foobar@example```.
+You can configure any command as *mail_command*; the only requirement is that the command can be executed successfully on the host where the script is running.
 
-The script output the template directly to stdout. You could just pipe this output into a file which then is served by your webserver. Indeed, you probably want to write a small wrapper which pipes the output of the script into a temporary file and then copies the output of that file to the live version. This prevents the live version of the statistics from being blank while the script is running. This wrapper could look like that:
+After you have created the configuration, you should run the script manually once in order to ensure that everything works as intended. Then you can configure a cronjob which triggers the script. The script does not require any specific frequency for it to be executed (it does not even need to be consistent). Depending on your needs this can be every minute, every 5 minutes or even every hour; email alerts may however arrive later and the downtime displayed in the statistics may display too less uptime when you choose a very low frequency (as a very short downtime will be counted as if it lasted until the next execution).
+
+The script outputs the template directly to stdout. You could just pipe this output into a file which then is served by your webserver. Indeed, you probably want to write a small wrapper which pipes the output of the script into a temporary file and then copies the output of that file to the live version. This prevents the live version of the statistics from being blank while the script is running. This wrapper could look like that:
 
 ```
 #!/bin/sh
