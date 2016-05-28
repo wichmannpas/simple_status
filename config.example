@@ -5,5 +5,6 @@
   "stats_file": "stats",
   "mail_command": "# {}",
   "template_file": "template-en.html",
-  "title": "Status: Foobar"
+  "title": "Status: Foobar",
+  "refresh_interval": 30
 }

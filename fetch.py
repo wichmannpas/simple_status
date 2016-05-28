@@ -204,6 +204,7 @@ def generate_status_page():
             stats_first.day, stats_first.month, stats_first.year,
             stats_first.hour, stats_first.minute),
         'title': CONFIG['title'],
+        'refresh_interval': CONFIG['refresh_interval'],
     }))
 
 
