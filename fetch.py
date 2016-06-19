@@ -228,6 +228,17 @@ def generate_status_page():
     stats_first = datetime.datetime.strptime(
         overall_oldest_key, '%Y%m%d%H%M')
 
+    # downtimes
+    if 'display_downtimes' in CONFIG and CONFIG['display_downtimes']:
+        display_downtimes = True
+        downtimes = [{
+            'host': host[0],
+            'downtimes': get_downtimes(host[0]),
+        } for host in CONFIG['hosts']]
+    else:
+        display_downtimes = False
+        downtimes = []
+
     # load template
     with open(CONFIG['template_file']) as template_file:
         template = Template(template_file.read())
@@ -235,10 +246,8 @@ def generate_status_page():
         'time': _format_datetime(now),
         'status': status,
         'stats_first': _format_datetime(stats_first),
-        'downtimes': [{
-            'host': host[0],
-            'downtimes': get_downtimes(host[0]),
-        } for host in CONFIG['hosts']],
+        'display_downtimes': display_downtimes,
+        'downtimes': downtimes,
         'title': CONFIG['title'],
         'refresh_interval': CONFIG['refresh_interval'],
     }))

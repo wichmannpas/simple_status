@@ -30,6 +30,15 @@ rm /tmp/temporary_status
 
 You can use only the alerting feature of this script, however the main focus lies on the statistics; so you would probably being better of with an even simpler solution in order to only get email alerts (i.e. the check_host method in the script would likely be all you need for that).
 
+Downtimes overview
+------------------
+
+Previous downtimes are displayed by the script if the config key *display_downtimes* is set.
+
+You can specify reasons for downtimes in the configuration by adding a list containing the start (formatted YYYYMMDDHHMM) as first and the reason as second element.
+
+Planned downtimes are not supported yet.
+
 Example
 -------
 

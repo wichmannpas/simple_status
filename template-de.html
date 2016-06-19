@@ -52,48 +52,50 @@
       {% endfor %}
     </table>
 
-    <h3>Bisherige Downtimes</h3>
-      <table style="width: 100%;">
-        <tr>
-          <th></th>
-          <th>Beginn</th>
-          <th>Ende</th>
-          <th>Grund</th>
-        </tr>
-        {% for host in downtimes %}
+    {%if display_downtimes %}
+      <h3>Bisherige Downtimes</h3>
+        <table style="width: 100%;">
           <tr>
-            <th rowspan="{% if host.downtimes|length == 0 %}1{% else %}{{ host.downtimes|length }}{% endif %}">
-              {{ host.host }}
-            </th>
-          {% if host.downtimes|length == 0 %}
-              <td colspan="3" style="text-align: center;">
-                <em>keine Downtimes bekannt.</em>
-              </td>
-          {% else %}
-            {% for downtime in host.downtimes %}
-              <td style="text-align: center;">
-                {{ downtime.0 }}
-              </td>
-              <td style="text-align: center;">
-                {% if downtime.1 == None %}
-                  <em>andauernd</em>
-                {% else %}
-                  {{ downtime.1 }}
-                {% endif %}
-              </td>
-              <td style="text-align: center;">
-                {% if downtime.2 == None %}
-                  <em>unbekannt</em>
-                {% else %}
-                  {{ downtime.2 }}
-                {% endif %}
-              </td>
-              </tr><tr>
-            {% endfor %}
-          {% endif %}
+            <th></th>
+            <th>Beginn</th>
+            <th>Ende</th>
+            <th>Grund</th>
           </tr>
-        {% endfor %}
-      </table>
+          {% for host in downtimes %}
+            <tr>
+              <th rowspan="{% if host.downtimes|length == 0 %}1{% else %}{{ host.downtimes|length }}{% endif %}">
+                {{ host.host }}
+              </th>
+            {% if host.downtimes|length == 0 %}
+                <td colspan="3" style="text-align: center;">
+                  <em>keine Downtimes bekannt.</em>
+                </td>
+            {% else %}
+              {% for downtime in host.downtimes %}
+                <td style="text-align: center;">
+                  {{ downtime.0 }}
+                </td>
+                <td style="text-align: center;">
+                  {% if downtime.1 == None %}
+                    <em>andauernd</em>
+                  {% else %}
+                    {{ downtime.1 }}
+                  {% endif %}
+                </td>
+                <td style="text-align: center;">
+                  {% if downtime.2 == None %}
+                    <em>unbekannt</em>
+                  {% else %}
+                    {{ downtime.2 }}
+                  {% endif %}
+                </td>
+                </tr><tr>
+              {% endfor %}
+            {% endif %}
+            </tr>
+          {% endfor %}
+        </table>
+    {% endif %}
 
     <p style="font-size: 15px;">Powered by <a href="https://github.com/wichmannpas/simple_status">Simple Status</a>.</p>
   </body>
