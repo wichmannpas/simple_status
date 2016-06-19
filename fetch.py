@@ -200,11 +200,15 @@ def get_downtimes(host):
             else:
                 current_reason = None
         elif last_down_start is not None:
-            downtimes.append((last_down_start, key, current_reason))
+            downtimes.append(
+                (_format_datetime(_parse_timestr(last_down_start)),
+                 _format_datetime(_parse_timestr(key)), current_reason))
             last_down_start = None
     if last_down_start is not None:
         # append current downtime
-        downtimes.append((last_down_start, None, current_reason))
+        downtimes.append(
+            (_format_datetime(_parse_timestr(last_down_start)),
+             None, current_reason))
 
     return downtimes
 
@@ -228,12 +232,9 @@ def generate_status_page():
     with open(CONFIG['template_file']) as template_file:
         template = Template(template_file.read())
     print(template.render({
-        'time': '{}.{}.{} {:02d}:{:02d}'.format(
-            now.day, now.month, now.year, now.hour, now.minute),
+        'time': _format_datetime(now),
         'status': status,
-        'stats_first': '{}.{}.{} {:02d}:{:02d}'.format(
-            stats_first.day, stats_first.month, stats_first.year,
-            stats_first.hour, stats_first.minute),
+        'stats_first': _format_datetime(stats_first),
         'downtimes': [{
             'host': host[0],
             'downtimes': get_downtimes(host[0]),
@@ -241,6 +242,15 @@ def generate_status_page():
         'title': CONFIG['title'],
         'refresh_interval': CONFIG['refresh_interval'],
     }))
+
+
+def _format_datetime(dt):
+    return '{}.{}.{} {:02d}:{:02d}'.format(
+        dt.day, dt.month, dt.year, dt.hour, dt.minute)
+
+
+def _parse_timestr(timestr):
+    return datetime.datetime.strptime(timestr, '%Y%m%d%H%M')
 
 
 if __name__ == '__main__':
