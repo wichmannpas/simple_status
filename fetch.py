@@ -178,6 +178,37 @@ def add_statistics_to_status(status):
     } for h in status]
 
 
+def get_downtimes(host):
+    """Get all downtimes of specified host."""
+    if os.path.isfile(CONFIG['stats_file']):
+        with open(CONFIG['stats_file'], 'r') as stats_file:
+            stats = json.loads(stats_file.read())
+    if host not in stats:
+        return []
+    stats = stats[host]
+
+    downtimes = []
+
+    sorted_keys = sorted(stats.keys())
+    last_down_start = None
+    current_reason = None
+    for key in sorted_keys:
+        if not stats[key]:
+            last_down_start = key
+            if key in CONFIG['downtimes']:
+                current_reason = CONFIG['downtimes'][key]
+            else:
+                current_reason = None
+        elif last_down_start is not None:
+            downtimes.append((last_down_start, key, current_reason))
+            last_down_start = None
+    if last_down_start is not None:
+        # append current downtime
+        downtimes.append((last_down_start, None, current_reason))
+
+    return downtimes
+
+
 def generate_status_page():
     """Generate a html page containing the status of the pages."""
     status = renew_status()
@@ -203,6 +234,10 @@ def generate_status_page():
         'stats_first': '{}.{}.{} {:02d}:{:02d}'.format(
             stats_first.day, stats_first.month, stats_first.year,
             stats_first.hour, stats_first.minute),
+        'downtimes': [{
+            'host': host[0],
+            'downtimes': get_downtimes(host[0]),
+        } for host in CONFIG['hosts']],
         'title': CONFIG['title'],
         'refresh_interval': CONFIG['refresh_interval'],
     }))

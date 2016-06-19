@@ -6,5 +6,8 @@
   "mail_command": "# {}",
   "template_file": "template-en.html",
   "title": "Status: Foobar",
-  "refresh_interval": 30
+  "refresh_interval": 30,
+  "downtimes": {
+    "197001010000": "Example Downtime"
+  }
 }
