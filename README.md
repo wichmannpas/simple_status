@@ -35,7 +35,7 @@ Downtimes overview
 
 Previous downtimes are displayed by the script if the config key *display_downtimes* is set.
 
-You can specify reasons for downtimes in the configuration by adding a list containing the start (formatted YYYYMMDDHHMM) as first and the reason as second element.
+You can specify reasons for downtimes in the configuration by adding a key-value pair to the *downtimes* dict in the configuration. The key should be the start time (formatted YYYYMMDDHHMM) and the value the reason which should be displayed.
 
 Planned downtimes are not supported yet.
 
