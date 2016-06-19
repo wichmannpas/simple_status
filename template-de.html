@@ -52,9 +52,9 @@
       {% endfor %}
     </table>
 
-    {%if display_downtimes %}
+    {% if display_downtimes %}
       <h3>Bisherige Downtimes</h3>
-        <table style="width: 100%;">
+        <table style="width: 100%; border-collapse: collapse;">
           <tr>
             <th></th>
             <th>Beginn</th>
@@ -62,12 +62,12 @@
             <th>Grund</th>
           </tr>
           {% for host in downtimes %}
-            <tr>
-              <th rowspan="{% if host.downtimes|length == 0 %}1{% else %}{{ host.downtimes|length }}{% endif %}">
+            <tr style="border-left: 1px solid black; border-top: 1px solid black; border-right: 1px solid black;{% if host.downtimes|length == 1%}border-bottom: 1px solid black;{% endif %}">
+              <th rowspan="{% if host.downtimes|length == 0 %}1{% else %}{{ host.downtimes|length }}{% endif %}" style="border-bottom: 1px solid black; border-right: 3px solid gray;">
                 {{ host.host }}
               </th>
             {% if host.downtimes|length == 0 %}
-                <td colspan="3" style="text-align: center;">
+                <td colspan="3" style="border-bottom: 1px solid black; border-right: 1px solid black;">
                   <em>keine Downtimes bekannt.</em>
                 </td>
             {% else %}
@@ -89,7 +89,8 @@
                     {{ downtime.2 }}
                   {% endif %}
                 </td>
-                </tr><tr>
+                {% set counter = loop.index + 1 %}
+            </tr><tr style="border-right: 1px solid black;{% if counter >= host.downtimes|length %}border-bottom: 1px solid black;{% endif %}">
               {% endfor %}
             {% endif %}
             </tr>
