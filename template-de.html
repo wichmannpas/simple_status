@@ -90,7 +90,7 @@
                   {% endif %}
                 </td>
                 {% set counter = loop.index + 1 %}
-            </tr><tr style="border-right: 1px solid black;{% if counter >= host.downtimes|length %}border-bottom: 1px solid black;{% endif %}">
+            </tr><tr style="border-left: 1px solid black; border-right: 1px solid black;{% if counter >= host.downtimes|length %}border-bottom: 1px solid black;{% endif %}">
               {% endfor %}
             {% endif %}
             </tr>
