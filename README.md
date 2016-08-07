@@ -39,10 +39,10 @@ You can specify reasons for downtimes in the configuration by adding a key-value
 
 Planned downtimes are not supported yet.
 
-Example
--------
+Examples
+--------
 
-A live example of the statistics page (in german) can be found [here](https://status.profitopia.de).
+Live examples of the statistics page can be found [in English](https://status.linuxandstuff.de) and [in German](https://status.profitopia.de).
 
 License
 -------
