@@ -8,6 +8,7 @@
   "title": "Status: Foobar",
   "refresh_interval": 30,
   "display_downtimes": true,
+  "date_format": "%d.%m.%Y %H:%M",
   "downtimes": {
     "197001010000": "Example Downtime"
   }

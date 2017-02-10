@@ -253,9 +253,8 @@ def generate_status_page():
     }))
 
 
-def _format_datetime(dt):
-    return '{}.{}.{} {:02d}:{:02d}'.format(
-        dt.day, dt.month, dt.year, dt.hour, dt.minute)
+def _format_datetime(dt: datetime.datetime) -> str:
+    return dt.strftime(CONFIG['date_format'])
 
 
 def _parse_timestr(timestr):
