@@ -1,0 +1,64 @@
+#!/usr/bin/env python3
+"""
+Check the age of a status page. Can be used as monitoring check command.
+
+No exceptions are catched. If anything fails (i.e. during http request),
+exit code 1 will be returned which is interpreted as warning by icinga.
+
+There is no timezone-awareness (yet). If your monitoring server has a
+differeny timezone than the server serving the status page, your setup is
+not compatible with this version of the script.
+"""
+
+import re
+import sys
+
+from argparse import ArgumentParser, Namespace
+from datetime import datetime
+from requests import get
+
+
+def main():
+    """Main routine."""
+    parser = ArgumentParser(description='Simple status check script.')
+    parser.add_argument(
+        'url', type=str, help='URL of status page to check')
+    parser.add_argument(
+        '-r', '--regexp', type=str, default=r'<p>Effective: ([^<]+)',
+        help='Regexp to match the effective date in page.')
+    parser.add_argument(
+        '-f', '--date-format', type=str, default='%d.%m.%Y %H:%M',
+        help='Format used for date.')
+    parser.add_argument(
+        '-w', '--warning-age', type=int, default=300,
+        help='Warning age (in seconds).')
+    parser.add_argument(
+        '-c', '--critical-age', type=int, default=900,
+        help='Critical age (in seconds).')
+
+    arguments = parser.parse_args()
+    check_status_page(arguments)
+
+
+def check_status_page(arguments: Namespace):
+    """Check status of page at url."""
+    status_page = get(arguments.url).text
+    effective_date = re.search(arguments.regexp, status_page)
+    if not effective_date:
+        print('Effective date not found on status page.')
+        sys.exit(2)
+    effective_date = effective_date.group(1)
+    effective_date = datetime.strptime(effective_date, arguments.date_format)
+    now = datetime.now()
+    age = now - effective_date
+    print('Last update: {} ago'.format(age))
+    age = age.total_seconds()
+
+    if age >= arguments.critical_age:
+        sys.exit(2)
+    elif age >= arguments.warning_age:
+        sys.exit(1)
+
+
+if __name__ == '__main__':
+    main()
