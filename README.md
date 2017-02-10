@@ -44,6 +44,11 @@ Examples
 
 Live examples of the statistics page can be found [in English](https://status.linuxandstuff.de) and [in German](https://status.profitopia.de).
 
+Monitoring of status page
+-------------------------
+
+If you want to monitor the age of the status page, you can use the script *check_status*. It can for example be used as icinga check command. It then generates warning and critical states when the age of the status page gets too old.
+
 License
 -------
 
