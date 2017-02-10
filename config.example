@@ -7,8 +7,8 @@
   "template_file": "template-en.html",
   "title": "Status: Foobar",
   "refresh_interval": 30,
-  "display_downtimes": true,
   "date_format": "%d.%m.%Y %H:%M",
+  "display_downtimes": true,
   "downtimes": {
     "197001010000": "Example Downtime"
   }
